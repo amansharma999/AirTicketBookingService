@@ -5,7 +5,7 @@ const { REMINDER_BINDING_KEY } = require("../config/serverConfig");
 const bookingService = new BookingService();
 
 class BookingController {
-  constructor() {}
+  // constructor() {}
 
   async sendMessageToQueue(req, res) {
     const channel = await createChannel();
