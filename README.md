@@ -15,6 +15,8 @@ The Booking Service is a microservice designed to handle booking operations for 
    - [Associations](#associations)
    - [Database Diagram](#database-diagram)
 7. [Acknowledgements](#acknowledgements)
+8. [Contributing](#contributing)
+
 
 ## Tools and Technologies
 - **Node.js**: JavaScript runtime.
@@ -29,7 +31,7 @@ The Booking Service is a microservice designed to handle booking operations for 
 ## Setup Instructions
 1. Clone the repository:
    ```sh
-   git clone https://github.com/amansharma999/AirTicketBookingService
+   git clone https://github.com/amansharma999/AirTicketBookingService.git
    cd bookingservice
    ```
 
@@ -174,7 +176,7 @@ If you would like to contribute to this project, please follow these steps:
 2. **Clone your fork**: Clone your forked repository to your local machine using the following command:
 
    ```sh
-   git clone https://github.com/your-username/AirTicketBookingService
+   git clone https://github.com/your-username/AirTicketBookingService.git
    ```
 
 3. **Create a new branch**: Create a new branch for your feature or bugfix:
