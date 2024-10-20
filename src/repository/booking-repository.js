@@ -21,21 +21,48 @@ class BookingRepository {
   async update(bookingId, data) {
     try {
       const booking = await Booking.findByPk(bookingId);
+      if (!booking) {
+        throw new AppError(
+          "RepositoryError",
+          "Cannot find Booking",
+          "Booking not found",
+          StatusCodes.NOT_FOUND
+        );
+      }
       if (data.status) {
         booking.status = data.status;
       }
       await booking.save();
-
-      // await Booking.update(data, {
-      //   where: { id: bookingId },
-      // });
-
       return booking;
     } catch (error) {
       throw new AppError(
         "RepositoryError",
         "Cannot update Booking",
         "There was some issue updating the booking, please try again later",
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+  async findBookingsByUserId(userId) {
+    try {
+      const bookings = await Booking.findAll({
+        where: {
+          userId,
+        },
+        attributes: [
+          "flightId",
+          "status",
+          "noOfSeats",
+          "totalCost",
+          "createdAt",
+        ],
+      });
+      return bookings;
+    } catch (error) {
+      throw new AppError(
+        "RepositoryError",
+        "Cannot find Booking",
+        "There was some issue finding the booking, please try again later",
         StatusCodes.INTERNAL_SERVER_ERROR
       );
     }

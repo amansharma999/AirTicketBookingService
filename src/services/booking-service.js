@@ -10,7 +10,7 @@ class BookingService {
   async createBooking(data) {
     try {
       const flightId = data.flightId;
-      const getFlightRequestURL = `${FLIGHT_SERVICE_PATH}/api/v1/flights/${flightId}`;
+      const getFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flightsservice/api/v1/flights/${flightId}`;
 
       const response = await axios.get(getFlightRequestURL);
 
@@ -26,7 +26,7 @@ class BookingService {
       const bookingPayload = { ...data, totalCost };
       const booking = await this.bookingRepository.create(bookingPayload);
       // this.bookingRepository.update(booking);
-      const updateFlightRequestURL = `${FLIGHT_SERVICE_PATH}/api/v1/flights/${booking.flightId}`;
+      const updateFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flightsservice/api/v1/flights/${booking.flightId}`;
       await axios.patch(updateFlightRequestURL, {
         totalSeats: flightData.totalSeats - booking.noOfSeats,
       });
@@ -34,6 +34,41 @@ class BookingService {
         status: "Confirmed",
       });
       return finalBooking;
+    } catch (error) {
+      if (error.name == "RepositoryError" || error.name == "ValidationError") {
+        throw error;
+      }
+      throw new ServiceError();
+    }
+  }
+
+  async findBookingsByUserId(userId) {
+    try {
+      const bookings = await this.bookingRepository.findBookingsByUserId(
+        userId
+      );
+      return bookings;
+    } catch (error) {
+      if (error.name == "RepositoryError" || error.name == "ValidationError") {
+        throw error;
+      }
+      throw new ServiceError();
+    }
+  }
+  async cancelBooking(bookingId) {
+    try {
+      const booking = await this.bookingRepository.update(bookingId, {
+        status: "Cancelled",
+      });
+
+      const getFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flightsservice/api/v1/flights/${booking.flightId}`;
+      const response = await axios.get(getFlightRequestURL);
+      const flightData = response.data.data;
+      const updateFlightRequestURL = `${FLIGHT_SERVICE_PATH}/flightsservice/api/v1/flights/${booking.flightId}`;
+      await axios.patch(updateFlightRequestURL, {
+        totalSeats: flightData.totalSeats + booking.noOfSeats,
+      });
+      return booking;
     } catch (error) {
       if (error.name == "RepositoryError" || error.name == "ValidationError") {
         throw error;
