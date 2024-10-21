@@ -9,8 +9,10 @@ The Booking Service is a microservice designed to handle booking operations for 
 3. [Setup Instructions](#setup-instructions)
 4. [Tools and Technologies](#tools-and-technologies)
 5. [Endpoints](#endpoints)
-   - [POST /bookings](#post-bookings)
-   - [POST /publish](#post-publish) 
+  - [POST /bookings](#create-booking)
+  - [GET /bookings/:userId](#get-bookings-by-user)
+  - [PATCH /bookings/cancel/:bookingId](#cancel-booking)
+  - [POST /publish](#publish-message)
 6. [Database Design](#database-design)
    - [Associations](#associations)
    - [Database Diagram](#database-diagram)
@@ -58,17 +60,18 @@ The Booking Service is a microservice designed to handle booking operations for 
 
 
 ## Endpoints
+Here are the updated endpoint sections for your README file with full URLs:
 
-### POST /bookings
-- **Description**: Creates a new booking.
-- **Request Body**:
-  - **Required**:
-    - `flightId` (string): ID of the flight.
-    - `noOfSeats` (number): Number of seats to book.
-    - `userId` (string): ID of the user making the booking.
+### Create Booking
 
-- **Response**:
-  - **Success** (201 Created):
+- **URL:** `/bookingservice/api/bookings`
+- **Method:** `POST`
+- **Body Parameters:**
+  - `flightId` (string, required): ID of the flight.
+  - `noOfSeats` (number, required): Number of seats to book.
+  - `userId` (string, required): ID of the user making the booking.
+- **Response:**
+  - **Success:** 201 Created
     ```json
     {
       "message": "Successfully completed booking",
@@ -84,7 +87,7 @@ The Booking Service is a microservice designed to handle booking operations for 
       }
     }
     ```
-  - **Error** (400 Bad Request):
+  - **Error:** 400 Bad Request
     ```json
     {
       "message": "Invalid request data",
@@ -93,7 +96,7 @@ The Booking Service is a microservice designed to handle booking operations for 
       "data": {}
     }
     ```
-  - **Error** (500 Internal Server Error):
+  - **Error:** 500 Internal Server Error
     ```json
     {
       "message": "Internal Server Error",
@@ -103,18 +106,99 @@ The Booking Service is a microservice designed to handle booking operations for 
     }
     ```
 
-### POST /publish
-- **Description**: Publishes a message to the queue.
-- **Request Body**:
-  - **Required**:
-    - `subject` (string): Subject of the notification.
-    - `content` (string): Content of the notification.
-    - `recepientEmail` (string): Email of the recipient.
-    - `notificationTime` (string): Time of the notification.
-  - **Optional**:
-    - `service` (string): Service name.
-- **Response**:
-  - **Success** (200 OK):
+### Get Bookings by User
+
+- **URL:** `/bookingservice/api/bookings/:userId`
+- **Method:** `GET`
+- **Response:**
+  - **Success:** 200 OK
+    ```json
+    {
+      "message": "Successfully fetched bookings",
+      "success": true,
+      "err": {},
+      "data": [
+      {
+        "flightId": "your_flight_id",
+        "status": "your_status",
+        "noOfSeats": your_number_of_seats,
+        "totalCost": your_total_cost,
+        "createdAt": "your_created_at_timestamp"
+      }
+      ]
+    }
+    ```
+  - **Error:** 400 Bad Request
+    ```json
+    {
+      "message": "User Id is required",
+      "success": false,
+      "err": {},
+      "data": {}
+    }
+    ```
+  - **Error:** 500 Internal Server Error
+    ```json
+    {
+      "message": "Internal Server Error",
+      "success": false,
+      "err": "Error explanation",
+      "data": {}
+    }
+    ```
+
+### Cancel Booking
+
+- **URL:** `/bookingservice/api/bookings/cancel/:bookingId`
+- **Method:** `PATCH`
+- **Response:**
+  - **Success:** 200 OK
+    ```json
+    {
+      "message": "Successfully cancelled booking",
+      "success": true,
+      "err": {},
+      "data": {
+        "id": "booking_id",
+        "flightId": "flight_id",
+        "userId": "user_id",
+        "noOfSeats": 2,
+        "totalCost": 200,
+        "status": "Cancelled"
+      }
+    }
+    ```
+  - **Error:** 400 Bad Request
+    ```json
+    {
+      "message": "Booking Id is required",
+      "success": false,
+      "err": {},
+      "data": {}
+    }
+    ```
+  - **Error:** 500 Internal Server Error
+    ```json
+    {
+      "message": "Internal Server Error",
+      "success": false,
+      "err": "Error explanation",
+      "data": {}
+    }
+    ```
+
+### Publish Message
+
+- **URL:** `/bookingservice/api/publish`
+- **Method:** `POST`
+- **Body Parameters:**
+  - `subject` (string, required): Subject of the notification.
+  - `content` (string, required): Content of the notification.
+  - `recepientEmail` (string, required): Email of the recipient.
+  - `notificationTime` (string, required): Time of the notification.
+  - [`service`](command:_github.copilot.openSymbolFromReferences?%5B%22%22%2C%5B%7B%22uri%22%3A%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fxcruzhd2%2FDesktop%2FProject%2FBackend%2FBookingService%2Fsrc%2Fservices%2Findex.js%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22pos%22%3A%7B%22line%22%3A1%2C%22character%22%3A37%7D%7D%5D%2C%223002442b-a21b-4afd-84f3-e4a285ac1bb5%22%5D "Go to definition") (string, optional): Service name.
+- **Response:**
+  - **Success:** 200 OK
     ```json
     {
       "message": "Successfully published the event",
@@ -123,7 +207,7 @@ The Booking Service is a microservice designed to handle booking operations for 
       "data": {}
     }
     ```
-  - **Error** (400 Bad Request):
+  - **Error:** 400 Bad Request
     ```json
     {
       "message": "Invalid request data",
@@ -132,7 +216,7 @@ The Booking Service is a microservice designed to handle booking operations for 
       "data": {}
     }
     ```
-  - **Error** (500 Internal Server Error):
+  - **Error:** 500 Internal Server Error
     ```json
     {
       "message": "Internal Server Error",
@@ -141,7 +225,6 @@ The Booking Service is a microservice designed to handle booking operations for 
       "data": {}
     }
     ```
-
 
 ## Database Design
 The database schema consists of three tables: `Users`, `Flights`, and `Bookings`.
